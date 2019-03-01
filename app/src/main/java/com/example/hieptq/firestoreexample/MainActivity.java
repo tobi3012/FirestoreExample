@@ -1,23 +1,19 @@
 package com.example.hieptq.firestoreexample;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -28,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String KEY_TITLE = "title";
     public static final String KEY_DESCRIPTION = "description";
 
-    private EditText etTitle, etDescription;
+    private EditText etTitle, etDescription, etPrority;
     private TextView tvLoad;
 
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -41,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         etTitle = findViewById(R.id.edit_text_title);
         etDescription = findViewById(R.id.edit_text_description);
+        etPrority = findViewById(R.id.edit_text_priority);
         tvLoad = findViewById(R.id.tv_load);
 
     }
@@ -77,15 +74,16 @@ public class MainActivity extends AppCompatActivity {
                     String documentId = note.getDocumentId();
                     String title = note.getTitle();
                     String description = note.getDescription();
+                    int priority = note.getPriority();
                     data += "ID: " + documentId
-                            + "\nTitle: " + title + "\nDescription: " + description + "\n\n";
+                            + "\nTitle: " + title + "\nDescription: " + description + "\nPriority: " + priority+"\n\n";
                 }
                 tvLoad.setText(data);
             }
         });
     }
 
-    public void saveNote(View v) {
+    /*public void saveNote(View v) {
         String title = etTitle.getText().toString();
         String description = etDescription.getText().toString();
 
@@ -109,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MainActivity.class.getSimpleName(), e.toString());
                     }
                 });
-    }
+    }*/
 
     public void loadNote(View view) {
         /*reference.get().
@@ -133,7 +131,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MainActivity.class.getSimpleName(), e.toString());
                     }
                 });*/
-        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        collectionReference.whereGreaterThanOrEqualTo("priority",27)
+                .orderBy("priority", Query.Direction.DESCENDING)
+                .limit(3)
+                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 String data = "";
@@ -144,8 +145,9 @@ public class MainActivity extends AppCompatActivity {
                     String documentId = note.getDocumentId();
                     String title = note.getTitle();
                     String description = note.getDescription();
+                    int priority = note.getPriority();
                     data += "ID: " + documentId
-                            + "\nTitle: " + title + "\nDescription: " + description + "\n\n";
+                            + "\nTitle: " + title + "\nDescription: " + description + "\nPriority: " + priority +"\n\n";
                 }
                 tvLoad.setText(data);
             }
@@ -175,8 +177,9 @@ public class MainActivity extends AppCompatActivity {
     public void addNote(View view) {
         String title = etTitle.getText().toString();
         String description = etDescription.getText().toString();
+        int priority = Integer.parseInt(etPrority.getText().toString());
 
-        Note note = new Note(title, description);
+        Note note = new Note(title, description, priority);
         collectionReference.add(note);
     }
 }

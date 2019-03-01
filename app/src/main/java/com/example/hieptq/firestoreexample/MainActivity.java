@@ -1,6 +1,7 @@
 package com.example.hieptq.firestoreexample;
 
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
@@ -111,11 +113,23 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void updateDescription(View view){
+    public void updateDescription(View view) {
         String description = etDescription.getText().toString();
-        Map<String,Object> note = new HashMap<>();
+        Map<String, Object> note = new HashMap<>();
         note.put(KEY_DESCRIPTION, description);
         reference.set(note, SetOptions.merge());
 //        reference.update(KEY_DESCRIPTION, description);
+    }
+
+    public void deleteDescription(View view) {
+//        Map<String, Object> note = new HashMap<>();
+//        note.put(KEY_DESCRIPTION, FieldValue.delete());
+//        reference.update(note);
+        reference.update(KEY_DESCRIPTION, FieldValue.delete());
+    }
+
+    public void deleteNote(View view) {
+        if (reference != null)
+            reference.delete();
     }
 }

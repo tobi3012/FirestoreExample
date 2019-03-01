@@ -40,6 +40,18 @@
         android:onClick="updateDescription"
         android:text="Update description" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="deleteDescription"
+        android:text="Delete description" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="deleteNote"
+        android:text="delete Note" />
+
     <TextView
         android:id="@+id/tv_load"
         android:layout_height="wrap_content"

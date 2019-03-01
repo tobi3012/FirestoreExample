@@ -16,6 +16,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,5 +109,13 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MainActivity.class.getSimpleName(), e.toString());
                     }
                 });
+    }
+
+    public void updateDescription(View view){
+        String description = etDescription.getText().toString();
+        Map<String,Object> note = new HashMap<>();
+        note.put(KEY_DESCRIPTION, description);
+        reference.set(note, SetOptions.merge());
+//        reference.update(KEY_DESCRIPTION, description);
     }
 }

@@ -13,10 +13,14 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +41,26 @@ public class MainActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.edit_text_description);
         tvLoad = findViewById(R.id.tv_load);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        reference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Toast.makeText(MainActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                    Log.d(MainActivity.class.getSimpleName(), e.toString());
+                    return;
+                }
+                if (documentSnapshot.exists()) {
+                    String title = documentSnapshot.getString(KEY_TITLE);
+                    String description = documentSnapshot.getString(KEY_DESCRIPTION);
+                    tvLoad.setText("Title: " + title + "\nDescription: " + description);
+                }
+            }
+        });
     }
 
     public void saveNote(View v) {

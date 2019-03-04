@@ -10,15 +10,18 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -113,6 +116,29 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     public void loadNote(View view) {
+        Task task1 = collectionReference.whereGreaterThan("priority", 2).orderBy("priority").get();
+        Task task2 = collectionReference.whereLessThan("priority", 2).orderBy("priority").get();
+        Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(task1, task2);
+        allTasks.addOnSuccessListener(new OnSuccessListener<List<QuerySnapshot>>() {
+            @Override
+            public void onSuccess(List<QuerySnapshot> querySnapshots) {
+                String data = "";
+                for (QuerySnapshot querySnapshot : querySnapshots) {
+                    for (QueryDocumentSnapshot queryDocumentSnapshot : querySnapshot) {
+                        Note note = queryDocumentSnapshot.toObject(Note.class);
+                        note.setDocumentId(queryDocumentSnapshot.getId());
+
+                        String documentId = note.getDocumentId();
+                        String title = note.getTitle();
+                        String description = note.getDescription();
+                        int priority = note.getPriority();
+                        data += "ID: " + documentId
+                                + "\nTitle: " + title + "\nDescription: " + description + "\nPriority: " + priority + "\n\n";
+                    }
+                    tvLoad.setText(data);
+                }
+            }
+        });
         /*reference.get().
                 addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -134,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MainActivity.class.getSimpleName(), e.toString());
                     }
                 });*/
-        collectionReference.whereGreaterThanOrEqualTo("priority", 27)
+        /*collectionReference.whereGreaterThanOrEqualTo("priority", 27)
 //                .orderBy("priority", Query.Direction.DESCENDING)
 //                .limit(3)
                 .orderBy("priority")
@@ -163,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.d(MainActivity.class.getSimpleName(), "onFailure: " + e.toString());
                     }
-                });
+                });*/
     }
 
     public void updateDescription(View view) {

@@ -22,6 +22,13 @@
         android:hint="Description"
         android:inputType="text" />
 
+    <EditText
+        android:id="@+id/edit_text_priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Priority"
+        android:inputType="number" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,11 +59,22 @@
         android:onClick="deleteNote"
         android:text="delete Note" />
 
-    <TextView
-        android:id="@+id/tv_load"
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:textSize="20sp"
-        android:text=""/>
+        android:onClick="addNote"
+        android:text="Add" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="20sp" />
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

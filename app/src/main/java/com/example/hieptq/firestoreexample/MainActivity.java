@@ -51,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
+    /*@Override
     protected void onStart() {
         super.onStart();
-        /*reference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        *//*reference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     tvLoad.setText("Title: " + title + "\nDescription: " + description);
                 }
             }
-        });*/
+        });*//*
         collectionReference.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 tvLoad.setText(data);
             }
         });
-    }
+    }*/
 
     /*public void saveNote(View v) {
         String title = etTitle.getText().toString();
@@ -148,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
                     tvLoad.append(data);
                 }
                 //tvLoad.setText(data);
-                theLastResult = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+                if (queryDocumentSnapshots.size() > 0) {
+                    theLastResult = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+                }
             }
         });
 

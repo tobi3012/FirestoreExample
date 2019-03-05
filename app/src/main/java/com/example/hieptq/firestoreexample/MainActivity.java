@@ -7,12 +7,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -51,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*@Override
+    @Override
     protected void onStart() {
         super.onStart();
-        *//*reference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+       /* reference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -69,14 +71,14 @@ public class MainActivity extends AppCompatActivity {
                     tvLoad.setText("Title: " + title + "\nDescription: " + description);
                 }
             }
-        });*//*
+        });*/
         collectionReference.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null)
                     return;
                 String data = "";
-                for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
+                /*for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
                     Note note = queryDocumentSnapshot.toObject(Note.class);
                     note.setDocumentId(queryDocumentSnapshot.getId());
 
@@ -87,10 +89,32 @@ public class MainActivity extends AppCompatActivity {
                     data += "ID: " + documentId
                             + "\nTitle: " + title + "\nDescription: " + description + "\nPriority: " + priority + "\n\n";
                 }
-                tvLoad.setText(data);
+                tvLoad.setText(data);*/
+                for (DocumentChange documentSnapshot : queryDocumentSnapshots.getDocumentChanges()) {
+                    DocumentSnapshot documentSnapshot1 = documentSnapshot.getDocument();
+                    String id = documentSnapshot1.getId();
+                    int oldIndex = documentSnapshot.getOldIndex();
+                    int newIndex = documentSnapshot.getNewIndex();
+
+                    switch (documentSnapshot.getType()) {
+                        case ADDED:
+                            tvLoad.append("\nAdded: " + id +
+                                    "\nOld Index: " + oldIndex + " New Index: " + newIndex);
+                            break;
+                        case REMOVED:
+                            tvLoad.append("\nRemoved: " + id +
+                                    "\nOld Index: " + oldIndex + " New Index: " + newIndex);
+                            break;
+
+                        case MODIFIED:
+                            tvLoad.append("\nModified: " + id +
+                                    "\nOld Index: " + oldIndex + " New Index: " + newIndex);
+                            break;
+                    }
+                }
             }
         });
-    }*/
+    }
 
     /*public void saveNote(View v) {
         String title = etTitle.getText().toString();

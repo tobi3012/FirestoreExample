@@ -30,6 +30,7 @@
         android:inputType="number" />
 
     <Button
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="saveNote"
@@ -42,18 +43,21 @@
         android:text="Load" />
 
     <Button
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="updateDescription"
         android:text="Update description" />
 
     <Button
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="deleteDescription"
         android:text="Delete description" />
 
     <Button
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="deleteNote"

@@ -14,10 +14,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = firebaseFirestore.collection("Notebook");
     private DocumentReference reference = firebaseFirestore.document("Notebook/My First Note");
+    private DocumentSnapshot theLastResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,40 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     public void loadNote(View view) {
+        Query query;
+        if (theLastResult == null) {
+            query = collectionReference.orderBy("priority").limit(3);
+        } else {
+            query = collectionReference.orderBy("priority").startAfter(theLastResult).limit(3);
+        }
+
+
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                String data = "";
+                for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
+                    Note note = queryDocumentSnapshot.toObject(Note.class);
+                    note.setDocumentId(queryDocumentSnapshot.getId());
+
+                    String documentId = note.getDocumentId();
+                    String title = note.getTitle();
+                    String description = note.getDescription();
+                    int priority = note.getPriority();
+                    data += "ID: " + documentId
+                            + "\nTitle: " + title + "\nDescription: " + description + "\nPriority: " + priority + "\n\n";
+                }
+
+                if (queryDocumentSnapshots.size() > 0) {
+                    data += "------------------\n\n";
+                    tvLoad.append(data);
+                }
+                //tvLoad.setText(data);
+                theLastResult = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+            }
+        });
+
+        /*//Multiple queries
         Task task1 = collectionReference.whereGreaterThan("priority", 2).orderBy("priority").get();
         Task task2 = collectionReference.whereLessThan("priority", 2).orderBy("priority").get();
         Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(task1, task2);
@@ -138,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     tvLoad.setText(data);
                 }
             }
-        });
+        });*/
         /*reference.get().
                 addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override

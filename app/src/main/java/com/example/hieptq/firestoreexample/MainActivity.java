@@ -25,7 +25,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String KEY_TITLE = "title";
     public static final String KEY_DESCRIPTION = "description";
 
-    private EditText etTitle, etDescription, etPrority;
+    private EditText etTitle, etDescription, etPrority, etTag;
     private TextView tvLoad;
 
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -49,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
         etTitle = findViewById(R.id.edit_text_title);
         etDescription = findViewById(R.id.edit_text_description);
         etPrority = findViewById(R.id.edit_text_priority);
+        etTag = findViewById(R.id.edit_text_tag);
         tvLoad = findViewById(R.id.tv_load);
+        updateNestedValue();
 
     }
 
@@ -143,14 +148,12 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     public void loadNote(View view) {
-        Query query;
+       /* Query query;
         if (theLastResult == null) {
             query = collectionReference.orderBy("priority").limit(3);
         } else {
             query = collectionReference.orderBy("priority").startAfter(theLastResult).limit(3);
         }
-
-
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -176,7 +179,32 @@ public class MainActivity extends AppCompatActivity {
                     theLastResult = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
                 }
             }
-        });
+        });*/
+
+        collectionReference.whereArrayContains("tags", "tag5").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        String data = "";
+
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Note note = documentSnapshot.toObject(Note.class);
+                            note.setDocumentId(documentSnapshot.getId());
+
+                            String documentId = note.getDocumentId();
+
+                            data += "ID: " + documentId;
+
+                            for (String tag : note.getTags().keySet()) {
+
+                                data += "\n-" + tag;
+                            }
+
+                            data += "\n\n";
+                        }
+                        tvLoad.setText(data);
+                    }
+                });
 
         /*//Multiple queries
         Task task1 = collectionReference.whereGreaterThan("priority", 2).orderBy("priority").get();
@@ -279,8 +307,17 @@ public class MainActivity extends AppCompatActivity {
         String title = etTitle.getText().toString();
         String description = etDescription.getText().toString();
         int priority = Integer.parseInt(etPrority.getText().toString());
-
-        Note note = new Note(title, description, priority);
+        String[] tagArr = etTag.getText().toString().split(",");
+        //List<String> tags = Arrays.asList(tagArr);
+        Map<String, Boolean> tags = new HashMap<>();
+        for(String tag:tagArr){
+            tags.put(tag,true);
+        }
+        Note note = new Note(title, description, priority, tags);
         collectionReference.add(note);
+    }
+
+    private void updateNestedValue() {
+        collectionReference.document("GKcYKxEm5dfNyUFhIfOM").update("tags.tags", true);
     }
 }

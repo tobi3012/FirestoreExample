@@ -1,5 +1,8 @@
 package com.example.hieptq.firestoreexample;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by HiepTQ on 3/1/2019.
  */
@@ -8,14 +11,16 @@ public class Note {
     private String title;
     private String description;
     private int priority;
+    private Map<String, Boolean> tags;
 
     public Note() {
     }
 
-    public Note(String title, String description, int priority) {
+    public Note(String title, String description, int priority, Map<String, Boolean> tags) {
         this.title = title;
         this.description = description;
         this.priority = priority;
+        this.tags = tags;
     }
 
     public int getPriority() {
@@ -48,5 +53,13 @@ public class Note {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Map<String, Boolean> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, Boolean> tags) {
+        this.tags = tags;
     }
 }
